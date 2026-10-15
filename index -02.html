@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ms">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borang Tuntutan Elaun Perjalanan - Taman-Taman Sabah</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+      body { background-color: #f4f6f9; padding: 10px 5px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #212529; }
+      .card { border-radius: 6px; border: 1px solid #ced4da; box-shadow: 0 2px 4px rgba(0,0,0,0.04); margin-bottom: 10px; }
+      .table-borang { font-size: 0.8rem; }
+      .table-borang th { background-color: #e2e8f0; text-align: center; vertical-align: middle; padding: 4px 2px; }
+      .table-borang td { padding: 2px 3px; vertical-align: middle; }
+      .sig-line { border-bottom: 1px solid #000; width: 80%; margin: 35px auto 4px auto; }
+      .sig-box { min-height: 100px; }
+      
+      /* Input dalam jadual */
+      .tbl-input {
+        border: 1px solid transparent;
+        background-color: transparent;
+        font-size: 0.8rem;
+        padding: 1px 3px;
+        width: 100%;
+        border-radius: 3px;
+      }
+      .tbl-input:hover, .tbl-input:focus {
+        border-color: #86b7fe;
+        background-color: #fff;
+        outline: none;
+      }
+
+      /* Style khas untuk Textarea Perihal Tugas (Auto-Wrap Text) */
+      textarea.tbl-input {
+        resize: none;
+        overflow: hidden;
+        min-height: 28px;
+        line-height: 1.3;
+        white-space: pre-wrap;
+        word-break: break-word;
+        display: block;
+      }
+
+      /* Menyembunyikan anak panah nombor pada input number */
+      input[type=number]::-webkit-inner-spin-button, 
+      input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+      }
+      input[type=number] { -moz-appearance: textfield; }
+
+      /* Tetapan Cetakan (Print Optimization) */
+      @media print {
+        .no-print { display: none !important; }
+        body { background-color: white; padding: 0; margin: 0; }
+        .card { border: 1px solid #000 !important; box-shadow: none !important; margin-bottom: 6px !important; padding: 8px !important; }
+        .table-borang th { background-color: #f1f5f9 !important; color: black !important; border: 1px solid #000 !important; padding: 3px 2px !important; }
+        .table-borang td { border: 1px solid #000 !important; padding: 2px 3px !important; }
+        input, select, textarea, .tbl-input { border: none !important; background: transparent !important; appearance: none; -webkit-appearance: none; box-shadow: none !important; resize: none !important; }
+        .sig-box { border: 1px solid #000 !important; height: 100px !important; min-height: 100px !important; }
+        .sig-line { margin: 30px auto 4px auto !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid" style="max-width: 1250px;">
+
+      <!-- Kepala Borang Rasmi -->
+      <div class="card p-3 mb-2">
+        <div class="text-center mb-2">
+          <h5 class="fw-bold mb-0">LEMBAGA PEMEGANG AMANAH TAMAN-TAMAN SABAH</h5>
+          <h6 class="fw-bold text-uppercase text-primary mb-0">BORANG TUNTUTAN ELAUN PERJALANAN</h6>
+        </div>
+
+        <!-- Profil Penuntut -->
+        <div class="row g-2">
+          <div class="col-md-5">
+            <label class="form-label small fw-bold mb-0">Nama Pemohon:</label>
+            <input type="text" id="namaPemohon" class="form-control form-control-sm" placeholder="Nama Penuh" onchange="simpanHeader()">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold mb-0">Taraf Perkhidmatan:</label>
+            <select id="tarafJawatan" class="form-select form-select-sm" onchange="simpanHeader()">
+              <option value="">-- Pilih Taraf --</option>
+              <option value="Tetap">Tetap</option>
+              <option value="Kontrak">Kontrak</option>
+              <option value="Sementara">Sementara</option>
+              <option value="PSH">PSH</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-bold mb-0">Gred Jawatan:</label>
+            <select id="gredJawatan" class="form-select form-select-sm" onchange="kemaskiniKadarSSPA()">
+              <option value="">-- Pilih Gred --</option>
+              <option value="PSH">PSH</option>
+              <option value="1-3">Gred 1 - 3</option>
+              <option value="5-8">Gred 5 - 8</option>
+              <option value="9-10">Gred 9 - 10</option>
+              <option value="11-12">Gred 11 - 12</option>
+              <option value="13">Gred 13</option>
+              <option value="14">Gred 14</option>
+              <option value="Jusa B-C">JUSA B - C</option>
+              <option value="Jusa A">JUSA A</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small fw-bold mb-0">Stesen Bertugas:</label>
+            <select id="stesenPemohon" class="form-select form-select-sm" onchange="simpanHeader()">
+              <option value="">-- Pilih Stesen --</option>
+              <option value="HQ">HQ</option>
+              <option value="TPS">TPS</option>
+              <option value="TK">TK</option>
+              <option value="TBC">TBC</option>
+              <option value="TPT">TPT</option>
+              <option value="TPPP">TPPP</option>
+              <option value="TTM">TTM</option>
+              <option value="TTAR">TTAR</option>
+              <option value="TTD">TTD</option>
+              <option value="TMTS">TMTS</option>
+	      <option value="TBT">TBT</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+           <label class="form-label small fw-bold mb-0">Sub-Station:</label>
+            <input type="text" id="subStation" class="form-control form-control-sm" placeholder=>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-bold mb-0">Tarikh Borang:</label>
+            <input type="date" id="tarikhBorang" class="form-control form-control-sm" onchange="simpanHeader()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Jadual Tuntutan Rasmi -->
+      <div class="card p-2 mb-2">
+        <div class="d-flex justify-content-between align-items-center mb-1 no-print">
+          <span class="fw-bold text-primary small"><i class="bi bi-table"></i> Jadual Tuntutan Elaun :</span>
+          <button class="btn btn-sm btn-primary fw-bold py-0 px-2" style="font-size: 0.8rem;" onclick="tambahBaris()"><i class="bi bi-plus-lg"></i> Tambah Baris</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle table-borang mb-0">
+            <thead>
+              <tr>
+                <th rowspan="2" style="width: 30px;">Bil</th>
+                <th rowspan="2" style="min-width: 200px;">Perihal Tugas</th>
+                <th rowspan="2" style="width: 125px;">Bertolak<br><small class="fw-normal">(Tarikh & Masa)</small></th>
+                <th rowspan="2" style="width: 125px;">Kembali<br><small class="fw-normal">(Tarikh & Masa)</small></th>
+                <th rowspan="2" style="width: 70px;">Jumlah Hari Dituntut</th>
+                <th colspan="6">Kadar Elaun Makan (Bil. Hari)</th>
+                <th rowspan="2" style="width: 70px;">Lojing (Bil. Hari)</th>
+                <th rowspan="2" style="width: 110px;">Amaun Dituntut (RM)</th>
+                <th rowspan="2" class="no-print" style="width: 30px;">Padam</th>
+              </tr>
+              <tr>
+                <th style="width: 35px;">100%</th>
+                <th style="width: 35px;">80%</th>
+                <th style="width: 35px;">60%</th>
+                <th style="width: 35px;">40%</th>
+                <th style="width: 35px;">20%</th>
+                <th style="width: 35px;">1/2</th>
+              </tr>
+            </thead>
+            <tbody id="jadualBody">
+              <!-- Baris-baris jadual akan dijana secara dinamik -->
+            </tbody>
+            <tfoot>
+              <tr class="fw-bold table-light">
+                <td colspan="12" class="text-end py-1">JUMLAH (RM):</td>
+                <td class="text-end py-1" id="subTotal">0.00</td>
+                <td class="no-print"></td>
+              </tr>
+              <tr class="fw-bold text-danger table-light">
+                <td colspan="12" class="text-end align-middle py-1">PENDAHULUAN DIRI (LESS ADV.) (RM):</td>
+                <td class="p-0">
+                  <input type="number" step="0.01" id="bakiAdvance" class="form-control form-control-sm text-end border-danger fw-bold text-danger bg-white py-0 px-1" style="font-size:0.8rem;" placeholder="0.00" oninput="kiraJadualKeseluruhan()">
+                </td>
+                <td class="no-print"></td>
+              </tr>
+              <tr class="fw-bold table-primary" style="font-size: 0.85rem;">
+                <td colspan="12" class="text-end py-1">JUMLAH KESELURAHAN (RM):</td>
+                <td class="text-end text-primary py-1" id="totalBersih">0.00</td>
+                <td class="no-print"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bahagian Tandatangan & Cop -->
+      <div class="row g-2 mb-3">
+        <div class="col-md-6">
+          <div class="card p-2 sig-box h-100 border-secondary text-center">
+            <h6 class="fw-bold text-dark text-uppercase mb-0 small">DISEDIAKAN</h6>
+            <div class="my-auto">
+              <div class="sig-line"></div>
+              <small class="text-muted d-block" style="font-size:0.7rem;"></small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card p-2 sig-box h-100 border-secondary text-center">
+            <h6 class="fw-bold text-dark text-uppercase mb-0 small">DISAHKAN</h6>
+            <div class="my-auto">
+              <div class="sig-line"></div>
+              <small class="text-muted d-block" style="font-size:0.7rem;"></small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Button Kawalan -->
+      <div class="text-center mt-2 mb-4 no-print">
+        <button class="btn btn-sm btn-success fw-bold me-2 px-3" onclick="window.print()"><i class="bi bi-printer"></i> Cetak Borang</button>
+        <button class="btn btn-sm btn-outline-danger fw-bold px-3" onclick="resetBorang()"><i class="bi bi-arrow-counterclockwise"></i> Reset Borang</button>
+      </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Kadar Elaun Makan Mengikut Kelayakan SSPA
+      const kadarSSPAMap = {
+        'PSH': 55.00,
+        '1-3': 115.00,
+        '5-8': 120.00,
+        '9-10': 125.00,
+        '11-12': 140.00,
+        '13': 175.00,
+        '14': 190.00,
+        'Jusa B-C': 195.00,
+        'Jusa A': 225.00
+      };
+
+      // Kadar Kelayakan Lojing Mengikut Gred Jawatan
+      const kadarLojingMap = {
+        'PSH': 55.00,
+        '1-3': 110.00,
+        '5-8': 120.00,
+        '9-10': 130.00,
+        '11-12': 140.00,
+        '13': 150.00,
+        '14': 160.00,
+        'Jusa B-C': 165.00,
+        'Jusa A': 170.00
+      };
+
+      window.onload = function() {
+        muatHeader();
+        muatJadualDariStorage();
+      };
+
+      function kemaskiniKadarSSPA() {
+        simpanHeader();
+        kiraJadualKeseluruhan();
+      }
+
+      function simpanHeader() {
+        var headerData = {
+          nama: document.getElementById('namaPemohon').value,
+          taraf: document.getElementById('tarafJawatan').value,
+          gred: document.getElementById('gredJawatan').value,
+          stesen: document.getElementById('stesenPemohon').value,
+          subStation: document.getElementById('subStation').value,
+          tarikh: document.getElementById('tarikhBorang').value,
+          bakiAdvance: document.getElementById('bakiAdvance').value
+        };
+        localStorage.setItem('tskew12_v4_header', JSON.stringify(headerData));
+      }
+
+      function muatHeader() {
+        var h = localStorage.getItem('tskew12_v4_header');
+        if (h) {
+          var d = JSON.parse(h);
+          document.getElementById('namaPemohon').value = d.nama || '';
+          document.getElementById('tarafJawatan').value = d.taraf || '';
+          document.getElementById('gredJawatan').value = d.gred || '';
+          document.getElementById('stesenPemohon').value = d.stesen || '';
+          document.getElementById('subStation').value = d.subStation || '';
+          document.getElementById('tarikhBorang').value = d.tarikh || '';
+          document.getElementById('bakiAdvance').value = d.bakiAdvance || '';
+        }
+      }
+
+      function autoResize(el) {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+      }
+
+      function kiraHari(row) {
+        var tBertolak = row.querySelector('.inp-tgl-bertolak').value;
+        var mBertolak = row.querySelector('.inp-masa-bertolak').value;
+        var tKembali = row.querySelector('.inp-tgl-kembali').value;
+        var mKembali = row.querySelector('.inp-masa-kembali').value;
+
+        if (tBertolak && mBertolak && tKembali && mKembali) {
+          var start = new Date(tBertolak + 'T' + mBertolak);
+          var end = new Date(tKembali + 'T' + mKembali);
+
+          if (end > start) {
+            var diffMs = end - start;
+            var diffHours = diffMs / (1000 * 60 * 60);
+
+            var jumlahHari = 0;
+
+            if (diffHours < 24) {
+              // Untuk tempoh tidak melebihi 24 jam: kelayakan 1/2 hari sekurang-kurangnya 8 jam
+              if (diffHours >= 8) {
+                jumlahHari = 0.5;
+              } else {
+                jumlahHari = 0;
+              }
+            } else {
+              // Untuk tempoh melebihi 24 jam
+              var hariPenuh = Math.floor(diffHours / 24);
+              var bakiJam = diffHours % 24;
+
+              jumlahHari = hariPenuh;
+              // Bagi baki masa melebihi 24 jam: kelayakan 1/2 hari sekurang-kurangnya 6 jam
+              if (bakiJam >= 6) {
+                jumlahHari += 0.5;
+              }
+            }
+
+            row.querySelector('.inp-jumlah-hari').value = jumlahHari;
+            return;
+          }
+        }
+        row.querySelector('.inp-jumlah-hari').value = 0;
+      }
+
+      function kiraHariDanJadual(element) {
+        var row = element.closest('tr');
+        kiraHari(row);
+        kiraJadualKeseluruhan();
+      }
+
+      function tambahBaris(data = null) {
+        var tbody = document.getElementById('jadualBody');
+        var rowCount = tbody.rows.length + 1;
+
+        var tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="text-center font-monospace row-bil">${rowCount}</td>
+          <td>
+            <textarea class="tbl-input inp-tujuan" rows="1" placeholder="Perihal tugas..." oninput="autoResize(this); simpanJadualToStorage()">${data ? data.tujuan : ''}</textarea>
+          </td>
+          <td>
+            <input type="date" class="tbl-input text-center inp-tgl-bertolak mb-1" value="${data ? data.tglBertolak : ''}" onchange="kiraHariDanJadual(this)">
+            <input type="time" class="tbl-input text-center inp-masa-bertolak" value="${data ? data.masaBertolak : ''}" onchange="kiraHariDanJadual(this)">
+          </td>
+          <td>
+            <input type="date" class="tbl-input text-center inp-tgl-kembali mb-1" value="${data ? data.tglKembali : ''}" onchange="kiraHariDanJadual(this)">
+            <input type="time" class="tbl-input text-center inp-masa-kembali" value="${data ? data.masaKembali : ''}" onchange="kiraHariDanJadual(this)">
+          </td>
+          <td>
+            <input type="number" step="0.5" readonly class="tbl-input text-center fw-bold inp-jumlah-hari" value="${data ? data.jumlahHari : '0'}" style="background-color: #f8f9fa;">
+          </td>
+          <td><input type="number" min="0" class="tbl-input text-center inp-h100" value="${data ? data.h100 : ''}" placeholder="0" oninput="kiraJadualKeseluruhan()"></td>
+          <td><input type="number" min="0" class="tbl-input text-center inp-h80" value="${data ? data.h80 : ''}" placeholder="0" oninput="kiraJadualKeseluruhan()"></td>
+          <td><input type="number" min="0" class="tbl-input text-center inp-h60" value="${data ? data.h60 : ''}" placeholder="0" oninput="kiraJadualKeseluruhan()"></td>
+          <td><input type="number" min="0" class="tbl-input text-center inp-h40" value="${data ? data.h40 : ''}" placeholder="0" oninput="kiraJadualKeseluruhan()"></td>
+          <td><input type="number" min="0" class="tbl-input text-center inp-h20" value="${data ? data.h20 : ''}" placeholder="0" oninput="kiraJadualKeseluruhan()"></td>
+          <td><input type="number" min="0" class="tbl-input text-center inp-hHalf" value="${data ? data.hHalf : ''}" placeholder="0" oninput="kiraJadualKeseluruhan()"></td>
+          <td><input type="number" min="0" class="tbl-input text-center inp-hariLojing" value="${data ? data.hariLojing : ''}" placeholder="0" oninput="kiraJadualKeseluruhan()"></td>
+          <td class="text-end fw-bold row-total">0.00</td>
+          <td class="text-center no-print">
+            <button class="btn btn-sm text-danger p-0" onclick="padamBaris(this)"><i class="bi bi-x-circle-fill"></i></button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+
+        var txtArea = tr.querySelector('.inp-tujuan');
+        if (txtArea) autoResize(txtArea);
+
+        if (data) {
+          kiraHari(tr);
+        }
+        kiraJadualKeseluruhan();
+      }
+
+      function padamBaris(btn) {
+        var row = btn.closest('tr');
+        row.remove();
+        kemaskiniNomborSiri();
+        kiraJadualKeseluruhan();
+      }
+
+      function kemaskiniNomborSiri() {
+        var rows = document.querySelectorAll('#jadualBody tr');
+        rows.forEach((row, idx) => {
+          row.querySelector('.row-bil').innerText = idx + 1;
+        });
+      }
+
+      function kiraJadualKeseluruhan() {
+        var gred = document.getElementById('gredJawatan').value;
+        var kadarBase = kadarSSPAMap[gred] || 0;
+        var kadarLojingBase = kadarLojingMap[gred] || 0;
+        var subTotal = 0;
+
+        var rows = document.querySelectorAll('#jadualBody tr');
+        rows.forEach(row => {
+          kiraHari(row);
+
+          var h100 = parseFloat(row.querySelector('.inp-h100').value) || 0;
+          var h80 = parseFloat(row.querySelector('.inp-h80').value) || 0;
+          var h60 = parseFloat(row.querySelector('.inp-h60').value) || 0;
+          var h40 = parseFloat(row.querySelector('.inp-h40').value) || 0;
+          var h20 = parseFloat(row.querySelector('.inp-h20').value) || 0;
+          var hHalf = parseFloat(row.querySelector('.inp-hHalf').value) || 0;
+          var hariLojing = parseFloat(row.querySelector('.inp-hariLojing').value) || 0;
+
+          // Kira Elaun Makan
+          var elaunMakan = kadarBase * (
+            (h100 * 1.0) +
+            (h80 * 0.8) +
+            (h60 * 0.6) +
+            (h40 * 0.4) +
+            (h20 * 0.2) +
+            (hHalf * 0.5)
+          );
+
+          // Kira Amaun Lojing
+          var lojing = kadarLojingBase * hariLojing;
+
+          var rowTotal = elaunMakan + lojing;
+          row.querySelector('.row-total').innerText = rowTotal.toFixed(2);
+          subTotal += rowTotal;
+        });
+
+        document.getElementById('subTotal').innerText = subTotal.toFixed(2);
+
+        var adv = parseFloat(document.getElementById('bakiAdvance').value) || 0;
+        var bersih = subTotal - adv;
+
+        document.getElementById('totalBersih').innerText = bersih.toFixed(2);
+
+        simpanHeader();
+        simpanJadualToStorage();
+      }
+
+      function simpanJadualToStorage() {
+        var listData = [];
+        var rows = document.querySelectorAll('#jadualBody tr');
+        rows.forEach(row => {
+          listData.push({
+            tujuan: row.querySelector('.inp-tujuan').value,
+            tglBertolak: row.querySelector('.inp-tgl-bertolak').value,
+            masaBertolak: row.querySelector('.inp-masa-bertolak').value,
+            tglKembali: row.querySelector('.inp-tgl-kembali').value,
+            masaKembali: row.querySelector('.inp-masa-kembali').value,
+            jumlahHari: row.querySelector('.inp-jumlah-hari').value,
+            h100: row.querySelector('.inp-h100').value,
+            h80: row.querySelector('.inp-h80').value,
+            h60: row.querySelector('.inp-h60').value,
+            h40: row.querySelector('.inp-h40').value,
+            h20: row.querySelector('.inp-h20').value,
+            hHalf: row.querySelector('.inp-hHalf').value,
+            hariLojing: row.querySelector('.inp-hariLojing').value
+          });
+        });
+        localStorage.setItem('tskew12_v4_list', JSON.stringify(listData));
+      }
+
+      function muatJadualDariStorage() {
+        var list = localStorage.getItem('tskew12_v4_list');
+        var tbody = document.getElementById('jadualBody');
+        tbody.innerHTML = '';
+
+        if (list) {
+          var items = JSON.parse(list);
+          if (items.length > 0) {
+            items.forEach(item => tambahBaris(item));
+            return;
+          }
+        }
+        
+        for (let i = 0; i < 3; i++) {
+          tambahBaris();
+        }
+      }
+
+      function resetBorang() {
+        if (confirm("Padam semua maklumat borang dan mula semula?")) {
+          localStorage.removeItem('tskew12_v4_header');
+          localStorage.removeItem('tskew12_v4_list');
+          location.reload();
+        }
+      }
+    </script>
+  </body>
+</html>
