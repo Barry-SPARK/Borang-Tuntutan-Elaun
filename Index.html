@@ -65,6 +65,32 @@
   <body>
     <div class="container-fluid" style="max-width: 1250px;">
 
+      <!-- Panel Pengurusan Rekod / Folder Tuntutan (NO-PRINT) -->
+      <div class="card p-3 mb-2 bg-light border-primary no-print">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-primary mb-0"><i class="bi bi-folder-fill me-1"></i> Pengurusan & Arkib Tuntutan Penuntut</h6>
+          <div>
+            <button class="btn btn-sm btn-success fw-bold me-1" onclick="simpanKeArkib()"><i class="bi bi-save"></i> Simpan Rekod</button>
+            <button class="btn btn-sm btn-secondary fw-bold" onclick="borangBaru()"><i class="bi bi-file-earmark-plus"></i> Borang Baru</button>
+          </div>
+        </div>
+        
+        <!-- Status Tuntutan Semasa -->
+        <div class="row align-items-center g-2 bg-white p-2 rounded border">
+          <div class="col-md-6">
+            <span class="small fw-bold">ID Tuntutan Semasa: </span>
+            <span id="labelIDTuntutan" class="badge bg-secondary">Tuntutan Baru (Belum Disimpan)</span>
+          </div>
+          <div class="col-md-6 d-flex align-items-center justify-content-md-end">
+            <label class="small fw-bold me-2">Status Pembayaran:</label>
+            <select id="statusBayaran" class="form-select form-select-sm w-auto" onchange="kemaskiniStatusBayaran()">
+              <option value="Belum Dibayar">🔴 Belum Dibayar</option>
+              <option value="Telah Dibayar">🟢 Telah Dibayar</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <!-- Kepala Borang Rasmi -->
       <div class="card p-3 mb-2">
         <div class="text-center mb-2">
@@ -76,7 +102,7 @@
         <div class="row g-2">
           <div class="col-md-5">
             <label class="form-label small fw-bold mb-0">Nama Pemohon:</label>
-            <input type="text" id="namaPemohon" class="form-control form-control-sm" placeholder="Nama Penuh" onchange="simpanHeader()">
+            <input type="text" id="namaPemohon" class="form-control form-control-sm" placeholder="Nama Penuh" oninput="simpanHeader()">
           </div>
           <div class="col-md-3">
             <label class="form-label small fw-bold mb-0">Taraf Perkhidmatan:</label>
@@ -118,12 +144,12 @@
               <option value="TTAR">TTAR</option>
               <option value="TTD">TTD</option>
               <option value="TMTS">TMTS</option>
-	      <option value="TBT">TBT</option>
+              <option value="TBT">TBT</option>
             </select>
           </div>
           <div class="col-md-4">
-           <label class="form-label small fw-bold mb-0">Sub-Station:</label>
-            <input type="text" id="subStation" class="form-control form-control-sm" placeholder=>
+            <label class="form-label small fw-bold mb-0">Sub-Station:</label>
+            <input type="text" id="subStation" class="form-control form-control-sm" placeholder="Sub-Station" oninput="simpanHeader()">
           </div>
           <div class="col-md-4">
             <label class="form-label small fw-bold mb-0">Tarikh Borang:</label>
@@ -211,10 +237,69 @@
         </div>
       </div>
 
-      <!-- Button Kawalan -->
+      <!-- Button Kawalan Utama -->
       <div class="text-center mt-2 mb-4 no-print">
         <button class="btn btn-sm btn-success fw-bold me-2 px-3" onclick="window.print()"><i class="bi bi-printer"></i> Cetak Borang</button>
-        <button class="btn btn-sm btn-outline-danger fw-bold px-3" onclick="resetBorang()"><i class="bi bi-arrow-counterclockwise"></i> Reset Borang</button>
+        <button class="btn btn-sm btn-outline-danger fw-bold px-3" onclick="resetBorang()"><i class="bi bi-arrow-counterclockwise"></i> Reset Borang Semasa</button>
+      </div>
+
+      <!-- FOLDER KHAS REKOD TUNTUTAN (NO-PRINT) -->
+      <div class="card p-3 mb-4 bg-white border-dark no-print">
+        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-folder-check text-warning me-2"></i>Tuntutan Yang Telah Diproses</h5>
+        
+        <!-- Nav Tabs -->
+        <ul class="nav nav-tabs" id="arkibTab" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link active fw-bold text-success" id="dibayar-tab" data-bs-toggle="tab" data-bs-target="#dibayar" type="button"><i class="bi bi-check-circle-fill me-1"></i>Telah Dibayar</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link fw-bold text-danger" id="draf-tab" data-bs-toggle="tab" data-bs-target="#draf" type="button"><i class="bi bi-clock-history me-1"></i> Belum Dibayar / Draf</button>
+          </li>
+        </ul>
+
+        <div class="tab-content pt-3" id="arkibTabContent">
+          <!-- Folder Telah Dibayar -->
+          <div class="tab-pane fade show active" id="dibayar" role="tabpanel">
+            <div class="table-responsive">
+              <table class="table table-hover table-striped align-middle small">
+                <thead class="table-success">
+                  <tr>
+                    <th>Tarikh Borang</th>
+                    <th>Nama Pemohon</th>
+                    <th>Stesen / Sub</th>
+                    <th>Jumlah Bersih (RM)</th>
+                    <th>Tarikh Kemaskini</th>
+                    <th class="text-center">Tindakan</th>
+                  </tr>
+                </thead>
+                <tbody id="senaraiDibayar">
+                  <!-- Dijana Secara Dinamik -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Folder Belum Dibayar -->
+          <div class="tab-pane fade" id="draf" role="tabpanel">
+            <div class="table-responsive">
+              <table class="table table-hover table-striped align-middle small">
+                <thead class="table-warning">
+                  <tr>
+                    <th>Tarikh Borang</th>
+                    <th>Nama Pemohon</th>
+                    <th>Stesen / Sub</th>
+                    <th>Jumlah Bersih (RM)</th>
+                    <th>Tarikh Kemaskini</th>
+                    <th class="text-center">Tindakan</th>
+                  </tr>
+                </thead>
+                <tbody id="senaraiBelumDibayar">
+                  <!-- Dijana Secara Dinamik -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -247,9 +332,12 @@
         'Jusa A': 170.00
       };
 
+      let idTuntutanSemasa = null;
+
       window.onload = function() {
         muatHeader();
         muatJadualDariStorage();
+        paparFolderArkib();
       };
 
       function kemaskiniKadarSSPA() {
@@ -259,13 +347,15 @@
 
       function simpanHeader() {
         var headerData = {
+          id: idTuntutanSemasa,
           nama: document.getElementById('namaPemohon').value,
           taraf: document.getElementById('tarafJawatan').value,
           gred: document.getElementById('gredJawatan').value,
           stesen: document.getElementById('stesenPemohon').value,
           subStation: document.getElementById('subStation').value,
           tarikh: document.getElementById('tarikhBorang').value,
-          bakiAdvance: document.getElementById('bakiAdvance').value
+          bakiAdvance: document.getElementById('bakiAdvance').value,
+          statusBayaran: document.getElementById('statusBayaran').value
         };
         localStorage.setItem('tskew12_v4_header', JSON.stringify(headerData));
       }
@@ -274,6 +364,7 @@
         var h = localStorage.getItem('tskew12_v4_header');
         if (h) {
           var d = JSON.parse(h);
+          idTuntutanSemasa = d.id || null;
           document.getElementById('namaPemohon').value = d.nama || '';
           document.getElementById('tarafJawatan').value = d.taraf || '';
           document.getElementById('gredJawatan').value = d.gred || '';
@@ -281,6 +372,12 @@
           document.getElementById('subStation').value = d.subStation || '';
           document.getElementById('tarikhBorang').value = d.tarikh || '';
           document.getElementById('bakiAdvance').value = d.bakiAdvance || '';
+          document.getElementById('statusBayaran').value = d.statusBayaran || 'Belum Dibayar';
+
+          if (idTuntutanSemasa) {
+            document.getElementById('labelIDTuntutan').innerText = idTuntutanSemasa;
+            document.getElementById('labelIDTuntutan').className = "badge bg-info text-dark";
+          }
         }
       }
 
@@ -306,19 +403,16 @@
             var jumlahHari = 0;
 
             if (diffHours < 24) {
-              // Untuk tempoh tidak melebihi 24 jam: kelayakan 1/2 hari sekurang-kurangnya 8 jam
               if (diffHours >= 8) {
                 jumlahHari = 0.5;
               } else {
                 jumlahHari = 0;
               }
             } else {
-              // Untuk tempoh melebihi 24 jam
               var hariPenuh = Math.floor(diffHours / 24);
               var bakiJam = diffHours % 24;
 
               jumlahHari = hariPenuh;
-              // Bagi baki masa melebihi 24 jam: kelayakan 1/2 hari sekurang-kurangnya 6 jam
               if (bakiJam >= 6) {
                 jumlahHari += 0.5;
               }
@@ -337,7 +431,7 @@
         kiraJadualKeseluruhan();
       }
 
-      function tambahBaris(data = null) {
+      function tambahBaris(data = null, autoCalc = true) {
         var tbody = document.getElementById('jadualBody');
         var rowCount = tbody.rows.length + 1;
 
@@ -376,10 +470,10 @@
         var txtArea = tr.querySelector('.inp-tujuan');
         if (txtArea) autoResize(txtArea);
 
-        if (data) {
-          kiraHari(tr);
+        if (autoCalc) {
+          if (data) kiraHari(tr);
+          kiraJadualKeseluruhan();
         }
-        kiraJadualKeseluruhan();
       }
 
       function padamBaris(btn) {
@@ -474,22 +568,156 @@
         if (list) {
           var items = JSON.parse(list);
           if (items.length > 0) {
-            items.forEach(item => tambahBaris(item));
+            items.forEach(item => tambahBaris(item, false));
+            kiraJadualKeseluruhan();
             return;
           }
         }
         
         for (let i = 0; i < 3; i++) {
-          tambahBaris();
+          tambahBaris(null, false);
         }
+        kiraJadualKeseluruhan();
       }
 
       function resetBorang() {
-        if (confirm("Padam semua maklumat borang dan mula semula?")) {
+        if (confirm("Reset borang semasa? Data yang belum disimpan ke dalam arkib akan terpadam.")) {
           localStorage.removeItem('tskew12_v4_header');
           localStorage.removeItem('tskew12_v4_list');
+          idTuntutanSemasa = null;
           location.reload();
         }
+      }
+
+      /* ==========================================
+         SISTEM ARKIB & PENGURUSAN FOLDER TUNTUTAN
+         ========================================== */
+
+      function simpanKeArkib() {
+        var nama = document.getElementById('namaPemohon').value.trim();
+        if (!nama) {
+          alert("Sila masukkan Nama Pemohon sebelum menyimpan rekod!");
+          return;
+        }
+
+        if (!idTuntutanSemasa) {
+          idTuntutanSemasa = 'CLAIM-' + Date.now().toString().slice(-6);
+          document.getElementById('labelIDTuntutan').innerText = idTuntutanSemasa;
+          document.getElementById('labelIDTuntutan').className = "badge bg-info text-dark";
+        }
+
+        simpanHeader();
+        simpanJadualToStorage();
+
+        var header = JSON.parse(localStorage.getItem('tskew12_v4_header'));
+        var list = JSON.parse(localStorage.getItem('tskew12_v4_list'));
+        var total = document.getElementById('totalBersih').innerText;
+
+        var rekod = {
+          id: idTuntutanSemasa,
+          header: header,
+          list: list,
+          total: total,
+          kemaskini: new Date().toLocaleString('ms-MY')
+        };
+
+        var arkib = JSON.parse(localStorage.getItem('tskew12_arkib')) || [];
+        var idx = arkib.findIndex(item => item.id === idTuntutanSemasa);
+
+        if (idx >= 0) {
+          arkib[idx] = rekod;
+        } else {
+          arkib.push(rekod);
+        }
+
+        localStorage.setItem('tskew12_arkib', JSON.stringify(arkib));
+        alert("Rekod tuntutan berjaya disimpan ke dalam arkib!");
+        paparFolderArkib();
+      }
+
+      function kemaskiniStatusBayaran() {
+        simpanHeader();
+        if (idTuntutanSemasa) {
+          simpanKeArkib();
+        }
+      }
+
+      function paparFolderArkib() {
+        var arkib = JSON.parse(localStorage.getItem('tskew12_arkib')) || [];
+        var tbodyDibayar = document.getElementById('senaraiDibayar');
+        var tbodyBelum = document.getElementById('senaraiBelumDibayar');
+
+        tbodyDibayar.innerHTML = '';
+        tbodyBelum.innerHTML = '';
+
+        var countDibayar = 0;
+        var countBelum = 0;
+
+        arkib.forEach(item => {
+          var isPaid = item.header.statusBayaran === 'Telah Dibayar';
+          var rowHtml = `
+            <tr>
+              <td>${item.header.tarikh || '-'}</td>
+              <td class="fw-bold">${item.header.nama}</td>
+              <td>${item.header.stesen || '-'} / ${item.header.subStation || '-'}</td>
+              <td class="fw-bold text-primary">RM ${item.total}</td>
+              <td class="text-muted small">${item.kemaskini}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" title="Buka/Edit Data" onclick="muatDariArkib('${item.id}')"><i class="bi bi-pencil-square"></i> Semak/Edit</button>
+                <button class="btn btn-sm btn-outline-danger py-0 px-2" title="Padam Rekod" onclick="padamDariArkib('${item.id}')"><i class="bi bi-trash"></i></button>
+              </td>
+            </tr>
+          `;
+
+          if (isPaid) {
+            tbodyDibayar.innerHTML += rowHtml;
+            countDibayar++;
+          } else {
+            tbodyBelum.innerHTML += rowHtml;
+            countBelum++;
+          }
+        });
+
+        if (countDibayar === 0) {
+          tbodyDibayar.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">Tiada tuntutan telah dibayar disimpan.</td></tr>`;
+        }
+        if (countBelum === 0) {
+          tbodyBelum.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">Tiada draf tuntutan disimpan.</td></tr>`;
+        }
+      }
+
+      function muatDariArkib(id) {
+        var arkib = JSON.parse(localStorage.getItem('tskew12_arkib')) || [];
+        var item = arkib.find(rec => rec.id === id);
+
+        if (item) {
+          localStorage.setItem('tskew12_v4_header', JSON.stringify(item.header));
+          localStorage.setItem('tskew12_v4_list', JSON.stringify(item.list));
+          
+          muatHeader();
+          muatJadualDariStorage();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+
+      function padamDariArkib(id) {
+        if (confirm("Adakah anda pasti untuk memadam rekod tuntutan ini dari arkib?")) {
+          var arkib = JSON.parse(localStorage.getItem('tskew12_arkib')) || [];
+          arkib = arkib.filter(rec => rec.id !== id);
+          localStorage.setItem('tskew12_arkib', JSON.stringify(arkib));
+          paparFolderArkib();
+
+          if (idTuntutanSemasa === id) {
+            borangBaru();
+          }
+        }
+      }
+
+      function borangBaru() {
+        localStorage.removeItem('tskew12_v4_header');
+        localStorage.removeItem('tskew12_v4_list');
+        idTuntutanSemasa = null;
+        location.reload();
       }
     </script>
   </body>
